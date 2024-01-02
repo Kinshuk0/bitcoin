@@ -12,6 +12,18 @@
 // LogPrintWithoutCategory should be ~3 orders of magnitude faster, as nothing is logged.
 //
 // LogWithoutWriteToFile should be ~2 orders of magnitude faster, as it avoids disk writes.
+// ...
+
+static void LogWithoutWriteToFileFailure(benchmark::Bench& bench)
+{
+    // Intentionally causing a failure in the LogWithoutWriteToFile test
+    // by not disabling writing the log to a file (leaving the debuglogfile enabled).
+    Logging(bench, {"-debug=1"}, [] {
+        LogPrintf("%s\n", "test");
+        LogPrint(BCLog::NET, "%s\n", "test");
+    });
+}
+
 
 static void Logging(benchmark::Bench& bench, const std::vector<const char*>& extra_args, const std::function<void()>& log)
 {
@@ -80,13 +92,13 @@ static void LogWithoutWriteToFile(benchmark::Bench& bench)
         LogPrint(BCLog::NET, "%s\n", "test");
     });
 }
-
-BENCHMARK(LogPrintLevelWithThreadNames, benchmark::PriorityLevel::HIGH);
-BENCHMARK(LogPrintLevelWithoutThreadNames, benchmark::PriorityLevel::HIGH);
-BENCHMARK(LogPrintWithCategory, benchmark::PriorityLevel::HIGH);
-BENCHMARK(LogPrintWithoutCategory, benchmark::PriorityLevel::HIGH);
-BENCHMARK(LogPrintfCategoryWithThreadNames, benchmark::PriorityLevel::HIGH);
-BENCHMARK(LogPrintfCategoryWithoutThreadNames, benchmark::PriorityLevel::HIGH);
-BENCHMARK(LogPrintfWithThreadNames, benchmark::PriorityLevel::HIGH);
-BENCHMARK(LogPrintfWithoutThreadNames, benchmark::PriorityLevel::HIGH);
-BENCHMARK(LogWithoutWriteToFile, benchmark::PriorityLevel::HIGH);
+BENCHMARK(LogWithoutWriteToFileFailure, benchmark::PriorityLevel::HIGH);
+// BENCHMARK(LogPrintLevelWithThreadNames, benchmark::PriorityLevel::HIGH);
+// BENCHMARK(LogPrintLevelWithoutThreadNames, benchmark::PriorityLevel::HIGH);
+// BENCHMARK(LogPrintWithCategory, benchmark::PriorityLevel::HIGH);
+// BENCHMARK(LogPrintWithoutCategory, benchmark::PriorityLevel::HIGH);
+// BENCHMARK(LogPrintfCategoryWithThreadNames, benchmark::PriorityLevel::HIGH);
+// BENCHMARK(LogPrintfCategoryWithoutThreadNames, benchmark::PriorityLevel::HIGH);
+// BENCHMARK(LogPrintfWithThreadNames, benchmark::PriorityLevel::HIGH);
+// BENCHMARK(LogPrintfWithoutThreadNames, benchmark::PriorityLevel::HIGH);
+// BENCHMARK(LogWithoutWriteToFile, benchmark::PriorityLevel::HIGH);
